@@ -10,7 +10,9 @@ C = x(2);
 A = x(3);
 mu = x(4);
 
-if WT > 1000
+if WT > 1000 && mu == 0
+    inside = 1;
+elseif WT < 900 && mu == 1
     inside = 1;
 else
     inside = 0;

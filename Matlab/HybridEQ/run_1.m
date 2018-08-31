@@ -8,7 +8,7 @@ mu = 0;
 x0 = [WT_0, C_0, A_0, mu].';
 
 % simulation horizon
-TSPAN=[0 100];
+TSPAN=[0 1000];
 JSPAN = [0 20];
 
 % rule for jumps
