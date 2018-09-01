@@ -1,69 +1,71 @@
-clear all
+%% initial conditions 
+WT_0 = 1000000;
+C_0 = 500000;
+A_0 = 0;
+x1 = [WT_0, C_0, A_0, 0];
+x2 = [WT_0, C_0, A_0, 1];
 
-% initial condition 
-ic=zeros(3,1);
-ic(1) = 1000;
-ic(2) = 300;
-ic(3) = 0;
+start_time = 0;
+WT_ref     = WT_0;
+solutions  = [start_time, WT_0, C_0, A_0, 0, WT_ref];
+distances  = cast(intmax,'double');
 
-% simulation end time 
-tend=1000;
+lookahead  = 30;
+recession_length = 10;
+ratio = recession_length/lookahead;
+step_count = 1000;
+new_index = cast(step_count*ratio, 'int32');
+rho        = 0;
+bound      = 100000;
 
-% simulation time span
-tspan=0:tend/1000:tend;
+%% Perform RHC
 
-%% run ODE
-[time,y]=ode45(@growth_control,tspan,ic);
- 
-WT=y(:,1);
-C=y(:,2);
-A=y(:,3);
+count = 0;
 
-plot(time,WT,'LineWidth',2)
-hold on
-plot(time,C,'LineWidth',2)
-hold on
-plot(time,10*A,'LineWidth',2)
-hold off
-
-function dxdt = growth_control(t,x) % function that computes dydt
-
-
-% define parameters here
-rmax = log(2)/20;
-B1 = 1.7;
-K1 = 10;
-rho = 1;
-gamma = log(2)/20;
-gammawt = .1;
-alpha = 1;
-%period = 2;
-%gate = 0.74*period;
-
-
-% WT=x(1)
-% C=x(2)
-% A=x(3)
-
-dxdt = zeros(size(x));
-
-Aeff = x(2)*x(3)/x(1);
-
-% define ODEs here
-dxdt(1) = rmax*(1 - (Aeff^B1)/(K1^B1 + Aeff^B1))*x(1) - gammawt*Aeff*x(1) ...
-          /(K1 + Aeff);
-
-if -rho*x(3) + rmax > 0
-    dxdt(2) = -rho*x(3) + rmax;
-else
-    dxdt(2) = 0;
-end
+while WT_ref > 50 && count < 1000
     
-if x(1) > 1000
-    dxdt(3) = alpha - gamma*x(3);
-else
-    dxdt(3) = -gamma*x(3);
+    end_time = start_time + lookahead;
+    tspan=start_time:lookahead/step_count:end_time;
+    WT_ref_vec = WT_ref.*ones(size(tspan)).';
+    
+    [times1, solutions1] = simulate(x1,tspan,rho);
+    [times2, solutions2] = simulate(x2,tspan,rho);
+    distance1 = calculate_norm(WT_ref_vec,solutions1(:,1));
+    distance2 = calculate_norm(WT_ref_vec,solutions2(:,1));
+    
+    if distance1 <= distance2
+        x1 = [solutions1(new_index+1,1),solutions1(new_index+1,2), ...
+              solutions1(new_index+1,3),0];
+        x2 = [solutions1(new_index+1,1),solutions1(new_index+1,2), ...
+              solutions1(new_index+1,3),1];
+        solutions = [solutions; tspan(2:new_index+1).', ...
+                     solutions1(2:new_index+1,:), WT_ref_vec(2:new_index+1)];
+        distances = [distances;distance1];
+        start_time = start_time + 10;
+    else
+        x1 = [solutions2(new_index+1,1),solutions2(new_index+1,2), ...
+              solutions2(new_index+1,3),0];
+        x2 = [solutions2(new_index+1,1),solutions2(new_index+1,2), ...
+              solutions2(new_index+1,3),1];
+        solutions = [solutions; tspan(2:new_index+1).', ...
+                     solutions2(2:new_index+1,:), WT_ref_vec(2:new_index+1)];
+        distances = [distances;distance2];
+        start_time = start_time + recession_length;
+    end
+    
+    if distances(end) < bound && distances(end-1) < bound
+        WT_ref = .99*WT_ref;
+    end
+    
+    count = count + 1;
 end
 
-end
+%%
+
+plot(solutions(:,1),(solutions(:,2)),'LineWidth',2,'Color',[0 0 1])
+hold on
+%plot(solutions(:,1),WT_0*(solutions(:,5)),'LineWidth',1)
+plot(solutions(:,1),(solutions(:,6)),'LineWidth',2,'Color',[1, 0.5, 0])
+hold off
+grid on
 
