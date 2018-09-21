@@ -1,7 +1,12 @@
-%% Initial Conditions 
-R_0 = 2; % Ratio of the two populations
-Prop_WT_0 = 1; % Proportion of the WT population present at any time compared to the start
-A_0 = 0; % Antibiotic concentration
+function [bool] = receding_horizon(population_ratio, rho)
+
+R_0 = population_ratio; % Ratio of the two populations, WT/C
+if R_0 > 0
+    Prop_WT_0 = 1;          % Proportion of the WT population present at any time compared to the start
+else
+    Prop_WT_0 = 0;
+end
+A_0 = 0;                % Antibiotic concentration
 x1 = [R_0 Prop_WT_0 A_0 0];
 x2 = [R_0 Prop_WT_0 A_0 1];
 
@@ -12,17 +17,14 @@ solutions  = [start_time R_0 Prop_WT_0 A_0 0 WT_ref];
 lookahead  = 30;
 recession_length = 10;
 ratio = recession_length/lookahead;
-step_count = 200;
+step_count = 100;
 new_index = cast(step_count*ratio, 'int32');
-rho        = .004;
 bound      = 100;
 distances  = bound + .01;
 
 %% Perform RHC
 
-count = 0;
-
-while count < 1000
+while solutions(end,3) > 10^-2 && solutions(end,3) < 10^2
     
     % Generates the timespan for the iteration.
     end_time = start_time + lookahead;
@@ -56,27 +58,17 @@ while count < 1000
     if distances(end) < bound && distances(end-1) < bound
         WT_ref = .95*WT_ref;
     end
-    
-    count = count + 1;
 end
 
-%% Plot Solutions
-plot(solutions(:,1),(solutions(:,2)),'LineWidth',2,'Color',[1 0 0])
-hold on
-plot(solutions(:,1),(solutions(:,3)),'LineWidth',2,'Color',[0 0 1])
-hold on
-plot(solutions(:,1),.01*(solutions(:,4)),'LineWidth',2,'Color',[0.5 1 0])
-hold on
-plot(solutions(:,1),(solutions(:,5)),'LineWidth',2,'Color',[0 1 0])
-hold on
-plot(solutions(:,1),(solutions(:,6)),'LineWidth',2,'Color',[0 1 1])
-legend('Population Ratios (Wild-Type/Controller)', ...
-       'Wild-Type Proportion (Current/Initial)','Antiobiotic Concentration', ...
-       '\mu','Reference Wild-Type Proportion')
-hold off
-
-xlim([0 1000])
-xlabel('Time (minutes)')
-title('Population Dynamics')
-grid on
-
+if solutions(end,3) <= 10e-3
+    bool = 1;
+else
+    bool = 0;
+end
+end
+    
+    
+    
+    
+    
+    
