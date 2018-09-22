@@ -49,13 +49,13 @@ solutions  = [start_time R_ PropWT_ A_ 0 WT_ref];
 lookahead  = 30;
 recessionLength = 10;
 ratio = recessionLength/lookahead;
-stepCount = 200;
+stepCount = 100;
 newIndex = cast(stepCount*ratio, 'int32');
 threshold      = 100;
 distances  = threshold + .01;
 %% Perform RHC
 
-while solutions(end,3) > 10e-2 && solutions(end,3) < 10e2
+while solutions(end,3) > 10e-2 && solutions(end,3) < 10
     
     % Generates the each timestep in the iteration.
     end_time = start_time + lookahead;
@@ -67,10 +67,10 @@ while solutions(end,3) > 10e-2 && solutions(end,3) < 10e2
     % Simulates for \mu = 0 and \mu = 1. The size of the invasive species
     % is then compared to the reference size at each time step, and a
     % distance is calculated for both values of \mu.
-    [times1, solutions1] = simulate(x1,tspan,rho);
-    [times2, solutions2] = simulate(x2,tspan,rho);
-    distance1 = calculate_distance(WT_ref_vec,solutions1(:,2));
-    distance2 = calculate_distance(WT_ref_vec,solutions2(:,2));
+    [times1, solutions1] = Simulate(x1,tspan,rho);
+    [times2, solutions2] = Simulate(x2,tspan,rho);
+    distance1 = CalculateDistance(WT_ref_vec,solutions1(:,2));
+    distance2 = CalculateDistance(WT_ref_vec,solutions2(:,2));
     
     % If \mu = 0 gets the size of the invasive population closer to the
     % reference, then the controller chooses to have the antibiotic off for

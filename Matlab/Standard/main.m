@@ -41,7 +41,7 @@
 % population ratio (relative to its original size) to 1 if the population
 % ratio is not zero. If the population ratio is zero, then the invasive
 % species population ratio is set to zero, and the simulation is over.
-R_ = 2;
+R_ = 4;
 if R_ > 0
     PropWT_ = 1;
 else
@@ -77,7 +77,7 @@ recessionLength = 10;
 ratio = recessionLength/lookahead;
 stepCount = 200;
 newIndex = cast(stepCount*ratio, 'int32');
-rho        = .004;
+rho        = .01;
 threshold      = 100;
 distances  = threshold + .01;
 endSimulation = 10000;
@@ -97,10 +97,10 @@ while iteration < endSimulation/recessionLength
     % Simulates for \mu = 0 and \mu = 1. The size of the invasive species
     % is then compared to the reference size at each time step, and a
     % distance is calculated for both values of \mu.
-    [times1, solutions1] = simulate(x1,tspan,rho);
-    [times2, solutions2] = simulate(x2,tspan,rho);
-    distance1 = calculate_distance(WT_ref_vec,solutions1(:,2));
-    distance2 = calculate_distance(WT_ref_vec,solutions2(:,2));
+    [times1, solutions1] = Simulate(x1,tspan,rho);
+    [times2, solutions2] = Simulate(x2,tspan,rho);
+    distance1 = CalculateDistance(WT_ref_vec,solutions1(:,2));
+    distance2 = CalculateDistance(WT_ref_vec,solutions2(:,2));
     
     % If \mu = 0 gets the size of the invasive population closer to the
     % reference, then the controller chooses to have the antibiotic off for
