@@ -55,7 +55,7 @@ threshold      = 100;
 distances  = threshold + .01;
 %% Perform RHC
 
-while solutions(end,3) > 10^-2 && solutions(end,3) < 10^2
+while solutions(end,3) > 10e-2 && solutions(end,3) < 10e2
     
     % Generates the each timestep in the iteration.
     end_time = start_time + lookahead;
@@ -124,7 +124,7 @@ end
 
 % If the simulation ended because the invasive species populatio ratio was
 % small.
-if solutions(end,3) <= 10e-3
+if solutions(end,3) <= 10e-2
     bool = 1;
 % If the simulation ended because the invasive species populatio ratio was
 % large.
