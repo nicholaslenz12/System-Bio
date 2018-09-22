@@ -24,7 +24,7 @@ end
 
 %{
 for i=1:(h+1)^2
-    z(i) = receding_horizon(x(i),y(i));
+    z(i) = RecedingHorizon(x(i),y(i));
     if mod(i,h) == 0
         disp(sprintf('%-15.2d',i));
     end

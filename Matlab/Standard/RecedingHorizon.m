@@ -1,47 +1,21 @@
-%MAIN Simulates the competition between two species of bacteria. The first
-% bacteria, the controller, produces antibiotic to slow the growth of the
-% second, the invasive species. The problem is non-trivial because
-% producing antibiotic puts a metabolic load on the controller, slowing its
-% own growth rate. The system is modelled by the following system of ODEs
-%   R'   = F(R, A)
-%   P'wt = G(R, A)
-%   A'   = H(A, \mu)
-% where R is the ratio of the size of the invasive species population to
-% the size of the controller population, Pwt is the ratio of the size of
-% the invasive species population comparted to its starting value, and A is
-% concentration of the antibiotic. \mu takes on values in the set {0,1}
-% where \mu = 0 corresponds to antibiotic not being produced and \mu = 1
-% corresponds to the antibiotic being produced.
-% 
-%The inputs for system are:
-% R_0 = the intial ratio of the two population sizes Pwt_0/Pc_0
-% rho = the metabolic cost on the controller for producing the antibiotic.
-%       values should be in the set [0,100], where 0 corresponds to no cost
-%       and larger values correspond to higher costs.
-%
-%The behavior of the controller is determined by an algorithm embedded in
-% the simulation. The goal of the algorithm is to reduce the size of the
-% invasive species to near 0. The outline of the algorithm is as follows:
-% 1. Choose a reference size for the invasive species. The controller will
-%    try to keep the invasive species near this reference size.
-% 2. The system is simulated for 30 minutes. The controller, with the
-%    knowledge of what the behavior of the invasive species during that
-%    time is, chooses to turn on or off antibiotic production for the next
-%    10 minutes to try to get the invasive species population close to the
-%    reference.
-% 3. Time is moved forward 10 minutes. If the invasive species population
-%    is close to the reference for the last two iterations, the reference
-%    is reduced to 95 percent of the previous size.
-%
-%The output of the simulation is a plot of the paramters R, Pwt, A, \mu,
-% and the reference size as they vary through time.
+function [bool] = RecedingHorizon(populationRatio, rho)
+%RECEDINGHORIZON RecedingHorizon simulates two competing bacteria
+% populations. To read the full description go to main.m in this directory.
+%The inputs for this function are:
+% populationRatio : The intial ratio of the two population sizes
+%                   Pwt_0/Pc_0.
+% rho             : The metablic cost on the controller for producing
+%                   antibiotic.
+%The outputs are:
+% bool            : Has value 1 if the size of the invasive species
+%                   population converges, 0 if not.
 %% Initial Conditions and Important Parameters
 
 % Here we choose the inital population ratio. We set the invasize species
 % population ratio (relative to its original size) to 1 if the population
 % ratio is not zero. If the population ratio is zero, then the invasive
 % species population ratio is set to zero, and the simulation is over.
-R_ = 2;
+R_ = populationRatio;
 if R_ > 0
     PropWT_ = 1;
 else
@@ -77,15 +51,11 @@ recessionLength = 10;
 ratio = recessionLength/lookahead;
 stepCount = 200;
 newIndex = cast(stepCount*ratio, 'int32');
-rho        = .004;
 threshold      = 100;
 distances  = threshold + .01;
-endSimulation = 10000;
 %% Perform RHC
 
-iteration = 0;
-
-while iteration < endSimulation/recessionLength
+while solutions(end,3) > 10^-2 && solutions(end,3) < 10^2
     
     % Generates the each timestep in the iteration.
     end_time = start_time + lookahead;
@@ -149,36 +119,22 @@ while iteration < endSimulation/recessionLength
     if distances(end) < threshold && distances(end-1) < threshold
         WT_ref = .95*WT_ref;
     end
-    
-    iteration = iteration + 1;
 end
-%% Plot Solutions
+%% Determine Convergence
 
-% Plots the population ratio in red.
-plot(solutions(:,1),(solutions(:,2)),'LineWidth',2,'Color',[1 0 0])
-hold on
-% Plots the invasive population ratio in blue.
-plot(solutions(:,1),(solutions(:,3)),'LineWidth',2,'Color',[0 0 1])
-hold on
-% Plots the antibiotic concentraion in a green.
-plot(solutions(:,1),.01*(solutions(:,4)),'LineWidth',2,'Color',[0 1 0])
-hold on
-% Plots the controller state in a seafoam.
-plot(solutions(:,1),0.1*R_*(solutions(:,5)),'LineWidth',2,'Color',[0.5 1 0])
-hold on
-% Plots the controller state in a orange.
-plot(solutions(:,1),(solutions(:,6)),'LineWidth',2,'Color',[1 0.5 0])
-
-legend('Population Ratios (Wild-Type/Controller)', ...
-       'Wild-Type Proportion (Current/Initial)', ...
-       'Antiobiotic Concentration', ...
-       '\mu', ...
-       'Reference Wild-Type Proportion')
-   
-hold off
-
-xlim([0 0.1*endSimulation])
-xlabel('Time (minutes)')
-title('Population Dynamics')
-grid on
-
+% If the simulation ended because the invasive species populatio ratio was
+% small.
+if solutions(end,3) <= 10e-3
+    bool = 1;
+% If the simulation ended because the invasive species populatio ratio was
+% large.
+else
+    bool = 0;
+end
+end
+    
+    
+    
+    
+    
+    
