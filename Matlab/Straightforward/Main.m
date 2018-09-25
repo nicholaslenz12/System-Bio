@@ -181,4 +181,3 @@ xlim([0 0.1*endSimulation])
 xlabel('Time (minutes)')
 title('Population Dynamics')
 grid on
-
