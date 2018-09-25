@@ -17,8 +17,8 @@ rhoSteps   = 1000;
 rhoRange   = [0 100];
 rSteps     = 500;
 rRange     = [0 6];
-fileToLoad = 'test';
-loadPoint  = 5000;
+fileToLoad = 'rho-1000_0_100-R-500_0_6__52000';
+loadPoint  = 52000;
 
 x = [];
 for i=1:rhoSteps+1
