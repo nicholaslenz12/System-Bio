@@ -1,5 +1,5 @@
 %% Initial Conditions 
-WT_0 = 200;
+WT_0 = 150;
 C_0 = 50;
 A_0 = 0;
 x1 = [WT_0, C_0, A_0, 0];
@@ -15,8 +15,8 @@ recession_length = 10;
 ratio = recession_length/lookahead;
 step_count = 100;
 new_index = cast(step_count*ratio, 'int32');
-rho        = .004;
-bound      = 250;
+rho        = .01;
+bound      = 100*(WT_0)^(1/2);
 
 %% Perform RHC
 
@@ -55,7 +55,7 @@ while count < 1000
     
     
     if distances(end) < bound && distances(end-1) < bound
-        WT_ref = .99*WT_ref;
+        WT_ref = .95*WT_ref;
     end
     
     
