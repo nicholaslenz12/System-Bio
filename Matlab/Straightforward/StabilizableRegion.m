@@ -13,12 +13,12 @@
 %   (rhoSteps+1)x(rSteps+1) matrix, where each element has index:
 %   (rSteps+1)*row_index + column_index.
 
-rhoSteps   = 1000;
-rhoRange   = [0 100];
-rSteps     = 500;
-rRange     = [0 6];
-fileToLoad = 'rho-1000_0_100-R-500_0_6__52000';
-loadPoint  = 52000;
+rhoSteps   = 200;
+rhoRange   = [0 0.5];
+rSteps     = 200;
+rRange     = [3.6 4];
+fileToLoad = 'rho-200_0_0.5-R-200_3.6_4__';
+loadPoint  = 100000000;
 
 x = [];
 for i=1:rhoSteps+1
@@ -60,4 +60,7 @@ scatter(x(z == 0), y(z == 0), 8, 'r', 'filled', 'square')
 %ylim(yrange)
 ylabel('R, population ratio')
 xlabel('\rho')
+
+set(gcf,'position',[0 0 490*rhoSteps/max(rhoSteps,rSteps) 490*rSteps/max(rhoSteps,rSteps)])
 hold off
+
