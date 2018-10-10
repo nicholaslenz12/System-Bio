@@ -59,8 +59,8 @@ while iteration < endSimulation/recessionLength
     % distance is calculated for both values of \mu.
     [times1, solutions1] = simulate(x1,tspan,rho);
     [times2, solutions2] = simulate(x2,tspan,rho);
-    distance1 = calculate_distance(WT_ref_vec,solutions1(:,1));
-    distance2 = calculate_distance(WT_ref_vec,solutions2(:,1));
+    distance1 = CalculateDistance(WT_ref_vec,solutions1(:,1));
+    distance2 = CalculateDistance(WT_ref_vec,solutions2(:,1));
     
     % If \mu = 0 gets the size of the invasive population closer to the
     % reference, then the controller chooses to have the antibiotic off for
