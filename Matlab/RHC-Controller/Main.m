@@ -37,10 +37,10 @@
 % and the reference size as they vary through time.
 %% Initial Conditions and Important Parameters
 
-% Here we choose the inital population ratio. We set the invasize species
-% population ratio (relative to its original size) to 1 if the population
-% ratio is not zero. If the population ratio is zero, then the invasive
-% species population ratio is set to zero, and the simulation is over.
+% Here we choose the inital population ratio, 'R'. 'PropWT_' takes value 1
+% if the initial wild-type population size is non-zero (i.e 'R' is not
+% zero). If the wild-type population size is zero ('R' is zero) then
+% 'PropWT_' is set to 0.
 R_ = 3;
 if R_ > 0
     PropWT_ = 1;
@@ -48,30 +48,30 @@ else
     PropWT_ = 0;
 end
 
-% Here the antibiotic concentration is set to zero because before the
-% simulation starts, the controller is not producing antibiotic. x1 and x2
-% are both vectors that contain the intial conditions of the ODEs. They
-% differ in that x1(end) = 0, corresponding to the antibiotic being on at
-% first. Similarly, x2(end) = 1, implying the antiobiotic is off at the
-% start.
+% Here the antibiotic concentration, 'A', is set to 0 because before the
+% simulation starts, the controller is not producing antibiotic. 'x1' and
+% 'x2' are both vectors that contain the intial conditions of the ODEs.
+% They differ in that x1(end) = 0, corresponding to the antibiotic being
+% off at first. Similarly, x2(end) = 1, implying the antiobiotic is on at
+% the start.
 A_ = 0;
 x1 = [R_ PropWT_ A_ 0];
 x2 = [R_ PropWT_ A_ 1];
 
-% The simulatio starts at time zero. The reference size is set to the
-% starting size of the invasive species population. Solutions is a vector
-% corresponding to the parameters that will be plotted. Note that solutions
-% will grow to n x 6 matrix as the simulation runs.
+% The simulation start time, 'start_time', begins at 0. The reference size,
+% 'WT_ref' is set to 'PropWT_'. 'solutions' is a vector corresponding to
+% the parameters that will be plotted. Note that 'solutions' will grow to
+% n x 6 matrix as the simulation runs.
 start_time = 0;
 WT_ref     = PropWT_;
 solutions  = [start_time R_ PropWT_ A_ 0 WT_ref];
 
-% Sets how far ahead the controller can observe the behavior of the
-% invasive species. recession_length corresponds to how far time steps
-% ahead on each iteration. Higher step counts increase resolution. newIndex
-% corresponds to time step that is recessionLength minutes into the
-% simulation. Higher thresholds let the invasive species population vary
-% more from the reference size.
+% 'lookahead' sets how far (in time) the simulation runs for on each
+% iteration. 'recession_length' corresponds to how far time steps between
+% iterations. Higher values of 'stepCount' increases resolution. 'newIndex'
+% corresponds to time step that is 'recessionLength' minutes into the
+% simulation. Higher values of 'threshold' lets the invasive species
+% population vary more from the reference size.
 lookahead  = 30;
 recessionLength = 10;
 ratio = recessionLength/lookahead;
