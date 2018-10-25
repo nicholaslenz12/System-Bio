@@ -1,5 +1,5 @@
-%STABILIZABLEREGION plots the stabilizable region in the for choosen values
-% of \rho and R. 
+%STABILITYREGION plots the stabilizable region for choosen values of \rho
+% and R. 
 %The inputs are:
 % rhoSteps     : The number of increments between successive values of \rho.
 % rhoRange     : The range of values of \rho to be plotted.
@@ -43,7 +43,7 @@ end
 
 %
 for i=loadPoint:(rhoSteps+1)*(rSteps+1)
-    z(i) = RecedingHorizon(y(i),x(i));
+    z(i) = RunSimulation(y(i),x(i));
     if mod(i,rhoSteps) == 0
         disp(sprintf('%d',i))
     end

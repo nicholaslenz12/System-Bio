@@ -68,7 +68,7 @@ while iteration < endSimulation/recessionLength
     end_time = start_time + lookahead;
     tspan=start_time:lookahead/stepCount:end_time;
 
-    [times, solution] = Simulate(x,tspan,rho);
+    [times, solution] = DifferentialEquations(x,tspan,rho);
     
     if mod(iteration,2) == 0
          x = [solution(newIndex+1,1), ...

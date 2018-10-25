@@ -1,4 +1,4 @@
-function [bool] = RecedingHorizon(populationRatio, rho)
+function [bool] = RunSimulation(populationRatio, rho)
 %RECEDINGHORIZON RecedingHorizon simulates two competing bacteria
 % populations. To read the full description go to Main.m in this directory.
 %The inputs for this function are:
@@ -51,7 +51,7 @@ while solutions(end,3) > 10e-2 && solutions(end,3) < 10
     end_time = start_time + lookahead;
     tspan=start_time:lookahead/stepCount:end_time;
 
-    [times, solution] = Simulate(x,tspan,rho);
+    [times, solution] = DifferentialEquations(x,tspan,rho);
     
     x = [solution(newIndex+1,1), ...
          solution(newIndex+1,2), ...
