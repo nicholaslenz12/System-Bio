@@ -41,7 +41,7 @@ function dvdt = growth_control(t, x)
     end
     
     % Computes P'wt
-    dvdt(2) = rmax*(1 - (Aeff^B1)/(K1^B1 + Aeff^B1)) - gammawt*Aeff/(K1 + Aeff)*x(2);
+    dvdt(2) = (rmax*(1 - (Aeff^B1)/(K1^B1 + Aeff^B1)) - gammawt*(Aeff/(K1 + Aeff)))*x(2);
     
     % Computes A'
     if x(4) == 1

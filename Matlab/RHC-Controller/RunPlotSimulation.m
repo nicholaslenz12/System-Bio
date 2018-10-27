@@ -75,10 +75,10 @@ solutions  = [start_time R_ PropWT_ A_ 0 WT_ref];
 lookahead  = 30;
 recessionLength = 10;
 ratio = recessionLength/lookahead;
-stepCount = 200;
+stepCount = 100;
 newIndex = cast(stepCount*ratio, 'int32');
 rho        = .01;
-threshold      = 100;
+threshold      = 1000000;
 distances  = threshold + .01;
 endSimulation = 10000;
 %% Perform RHC
