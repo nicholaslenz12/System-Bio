@@ -20,8 +20,8 @@
 %        cost and larger values correspond to higher costs.
 %% Inputs section
 
-WT_0 = 150;
-C_0  = 50;
+WT_0 = 15000;
+C_0  = 5000;
 rho  = .01;
 %% Other variables/constants
 
@@ -39,7 +39,7 @@ recession_length = 10;
 ratio = recession_length/lookahead;
 step_count = 100;
 new_index = cast(step_count*ratio, 'int32');
-threshold      = 100*(WT_0)^(1/2);
+threshold      = 10000000000000;
 endSimulation  = 10000;
 %% Perform RHC
 
@@ -57,8 +57,8 @@ while iteration < endSimulation/recessionLength
     % Simulates for \mu = 0 and \mu = 1. The size of the invasive species
     % is then compared to the reference size at each time step, and a
     % distance is calculated for both values of \mu.
-    [times1, solutions1] = simulate(x1,tspan,rho);
-    [times2, solutions2] = simulate(x2,tspan,rho);
+    [times1, solutions1] = Simulate(x1,tspan,rho);
+    [times2, solutions2] = Simulate(x2,tspan,rho);
     distance1 = CalculateDistance(WT_ref_vec,solutions1(:,1));
     distance2 = CalculateDistance(WT_ref_vec,solutions2(:,1));
     
@@ -121,7 +121,7 @@ hold on
 plot(solutions(:,1),(solutions(:,4)),'LineWidth',2,'Color',[0 1 0])
 legend('Invasive Pop.', 'Controller Pop.', 'Target Size', 'State','A')
 hold off
-axis([0 1000 0 400])
+xlim([0 100])
 xlabel('Time (minutes)')
 title('Population Dynamics')
 grid on
