@@ -20,8 +20,8 @@
 %        cost and larger values correspond to higher costs.
 %% Inputs section
 
-WT_0 = 15000;
-C_0  = 5000;
+WT_0 = 15;
+C_0  = 5;
 rho  = .01;
 %% Other variables/constants
 
@@ -32,14 +32,14 @@ x2 = [WT_0, C_0, A_0, 1];
 start_time = 0;
 WT_ref     = WT_0;
 solutions  = [start_time, WT_0, C_0, A_0, 0, WT_ref];
-distances  = cast(intmax,'double');
 
 lookahead  = 30;
-recession_length = 10;
-ratio = recession_length/lookahead;
+recessionLength = 10;
+ratio = recessionLength/lookahead;
 step_count = 100;
 new_index = cast(step_count*ratio, 'int32');
-threshold      = 10000000000000;
+threshold      = 1000000;
+distances      = threshold + .01;
 endSimulation  = 10000;
 %% Perform RHC
 
@@ -96,7 +96,7 @@ while iteration < endSimulation/recessionLength
                      solutions2(2:new_index+1,:), ...
                      WT_ref_vec(2:new_index+1)];
         distances = [distances;distance2];
-        start_time = start_time + recession_length;
+        start_time = start_time + recessionLength;
     end
     
     % If two succesive iterations are small, then the reference size is
@@ -121,7 +121,7 @@ hold on
 plot(solutions(:,1),(solutions(:,4)),'LineWidth',2,'Color',[0 1 0])
 legend('Invasive Pop.', 'Controller Pop.', 'Target Size', 'State','A')
 hold off
-xlim([0 100])
+xlim([0 300])
 xlabel('Time (minutes)')
 title('Population Dynamics')
 grid on
