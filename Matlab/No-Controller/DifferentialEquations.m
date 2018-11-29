@@ -23,9 +23,13 @@ K1 = 10;
 gamma = log(2)/20;
 gammawt = .1;
 alpha = 1;
-%% Simulate ODE
+%% Hill Function
 
-[times, values]=ode45(@growth_control,tspan,initialConditions);
+function hill_output = hill_function(half_occupation,hill_coefficient,concentration)
+    hill_output = (concentration^hill_coefficient) ...
+                 /(half_occupation^hill_coefficient + concentration^hill_coefficient);
+end
+%% Time Derivative
 
 function dvdt = growth_control(t, x)
     % Sets the effective antibiotic concentration, which is Pc*A/Pwt or
@@ -35,13 +39,13 @@ function dvdt = growth_control(t, x)
     
     % Computes R'
     if -rho*x(3) + rmax > 0
-        dvdt(1) = x(1)*(rho*x(3) - rmax*((Aeff^B1)/(K1^B1 + Aeff^B1)) - gammawt*Aeff/(K1 + Aeff));
+        dvdt(1) = x(1)*(rho*x(3) - rmax*hill_function(K1,B1,Aeff) - gammawt*hill_function(K1,1,Aeff));
     else
-        dvdt(1) = x(1)*(rmax*(1 - (Aeff^B1)/(K1^B1 + Aeff^B1)) - gammawt*Aeff/(K1 + Aeff));
+        dvdt(1) = x(1)*(rmax*(1 - hill_function(K1,B1,Aeff)) - gammawt*hill_function(K1,1,Aeff));
     end
     
     % Computes P'wt
-    dvdt(2) = (rmax*(1 - (Aeff^B1)/(K1^B1 + Aeff^B1)) - gammawt*(Aeff/(K1 + Aeff)))*x(2);
+    dvdt(2) = (rmax*(1 - hill_function(K1,B1,Aeff)) - gammawt*hill_function(K1,1,Aeff))*x(2);
     
     % Computes A'
     if x(4) == 1
@@ -50,5 +54,9 @@ function dvdt = growth_control(t, x)
         dvdt(3) = -gamma*x(3);
     end
 end
+%% Simulate ODE
+
+[times, values]=ode45(@growth_control,tspan,initialConditions);
+
 end
 

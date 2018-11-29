@@ -38,7 +38,7 @@ recessionLength = 10;
 ratio = recessionLength/lookahead;
 step_count = 100;
 new_index = cast(step_count*ratio, 'int32');
-threshold      = 1000000;
+threshold      = 30;
 distances      = threshold + .01;
 endSimulation  = 10000;
 %% Perform RHC
@@ -121,7 +121,7 @@ hold on
 plot(solutions(:,1),(solutions(:,4)),'LineWidth',2,'Color',[0 1 0])
 legend('Invasive Pop.', 'Controller Pop.', 'Target Size', 'State','A')
 hold off
-xlim([0 300])
+xlim([0 150])
 xlabel('Time (minutes)')
 title('Population Dynamics')
 grid on

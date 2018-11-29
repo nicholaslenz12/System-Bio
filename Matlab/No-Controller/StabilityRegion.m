@@ -13,10 +13,10 @@
 %   (rhoSteps+1)x(rSteps+1) matrix, where each element has index:
 %   (rSteps+1)*row_index + column_index.
 
-rhoSteps   = 200;
-rhoRange   = [0 0.5];
+rhoSteps   = 400;
+rhoRange   = [0 100];
 rSteps     = 200;
-rRange     = [3.6 4];
+rRange     = [0 6];
 fileToLoad = '';
 loadPoint  = 1;
 

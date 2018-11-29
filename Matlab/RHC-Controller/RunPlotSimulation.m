@@ -78,9 +78,9 @@ ratio = recessionLength/lookahead;
 stepCount = 100;
 newIndex = cast(stepCount*ratio, 'int32');
 rho        = .01;
-threshold      = 1000000;
+threshold      = 2;
 distances  = threshold + .01;
-endSimulation = 10000;
+endSimulation = 1500;
 %% Perform RHC
 
 iteration = 0;
