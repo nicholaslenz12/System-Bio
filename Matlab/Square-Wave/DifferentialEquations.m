@@ -1,4 +1,4 @@
-function [times, values] = DifferentialEquations(initialConditions,tspan,rho)
+function values = DifferentialEquations(initialConditions,tspan,rho)
 %SIMULATE Simulates the ode:
 %   R'  = F(R, A)
 %   P'wt = G(R, A)
@@ -11,8 +11,6 @@ function [times, values] = DifferentialEquations(initialConditions,tspan,rho)
 % rho               : The metablic cost on the controller for producing
 %                     antibiotic.
 %The outputs are:
-% times             : A vector of time steps over which the simulation
-%                     runs. < Why do you have this?
 % values            : The value of both popoulation ratios and the
 %                     antibiotic concentration at each time step.
 %% Important Parameters
@@ -56,7 +54,7 @@ function dvdt = growth_control(t, x)
 end
 %% Simulate ODE
 
-[times, values]=ode45(@growth_control,tspan,initialConditions);
+[~, values]=ode45(@growth_control,tspan,initialConditions);
 
 end
 

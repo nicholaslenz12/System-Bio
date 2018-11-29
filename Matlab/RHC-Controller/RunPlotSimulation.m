@@ -97,8 +97,8 @@ while iteration < endSimulation/recessionLength
     % Simulates for \mu = 0 and \mu = 1. The size of the invasive species
     % is then compared to the reference size at each time step, and a
     % distance is calculated for both values of \mu.
-    [times1, solutions1] = DifferentialEquations(x1,tspan,rho);
-    [times2, solutions2] = DifferentialEquations(x2,tspan,rho);
+    solutions1 = DifferentialEquations(x1,tspan,rho);
+    solutions2 = DifferentialEquations(x2,tspan,rho);
     distance1 = CalculateDistance(WT_ref_vec,solutions1(:,2));
     distance2 = CalculateDistance(WT_ref_vec,solutions2(:,2));
     
@@ -177,7 +177,7 @@ legend('Population Ratios (Wild-Type/Controller)', ...
    
 hold off
 
-xlim([0 0.1*endSimulation])
+xlim([0 endSimulation])
 xlabel('Time (minutes)')
 title('Population Dynamics')
 grid on

@@ -51,12 +51,12 @@ solutions  = [start_time R_ PropWT_ A_ 1];
 % recession_length corresponds to how far time steps ahead on each
 % iteration. Higher step counts increase resolution. newIndex corresponds
 % to time step that is recessionLength minutes into the simulation.
-lookahead  = 30;
+lookahead = 30;
 recessionLength = 10;
 ratio = recessionLength/lookahead;
 stepCount = 100;
 newIndex = cast(stepCount*ratio, 'int32');
-rho        = .01;
+rho = .01;
 endSimulation = 10000;
 %% Perform RHC
 
@@ -68,7 +68,7 @@ while iteration < endSimulation/recessionLength
     end_time = start_time + lookahead;
     tspan=start_time:lookahead/stepCount:end_time;
 
-    [times, solution] = DifferentialEquations(x,tspan,rho);
+    solution = DifferentialEquations(x,tspan,rho);
     
     x = [solution(newIndex+1,1), ...
          solution(newIndex+1,2), ...
@@ -100,8 +100,7 @@ plot(solutions(:,1),0.1*R_*(solutions(:,5)),'LineWidth',2,'Color',[0.5 1 0])
 legend('Population Ratios (Wild-Type/Controller)', ...
        'Wild-Type Proportion (Current/Initial)', ...
        'Antiobiotic Concentration', ...
-       '\mu', ...
-       'Reference Wild-Type Proportion')
+       '\mu')
    
 hold off
 

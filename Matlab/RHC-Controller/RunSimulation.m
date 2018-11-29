@@ -51,7 +51,7 @@ recessionLength = 10;
 ratio = recessionLength/lookahead;
 stepCount = 100;
 newIndex = cast(stepCount*ratio, 'int32');
-threshold      = 100;
+threshold      = 10000;
 distances  = threshold + .01;
 %% Perform RHC
 
@@ -67,8 +67,8 @@ while solutions(end,3) > 10e-2 && solutions(end,3) < 10
     % Simulates for \mu = 0 and \mu = 1. The size of the invasive species
     % is then compared to the reference size at each time step, and a
     % distance is calculated for both values of \mu.
-    [times1, solutions1] = DifferentialEquations(x1,tspan,rho);
-    [times2, solutions2] = DifferentialEquations(x2,tspan,rho);
+    solutions1 = DifferentialEquations(x1,tspan,rho);
+    solutions2 = DifferentialEquations(x2,tspan,rho);
     distance1 = CalculateDistance(WT_ref_vec,solutions1(:,2));
     distance2 = CalculateDistance(WT_ref_vec,solutions2(:,2));
     

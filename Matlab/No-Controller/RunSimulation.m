@@ -51,7 +51,7 @@ while solutions(end,3) > 10e-2 && solutions(end,3) < 10
     end_time = start_time + lookahead;
     tspan=start_time:lookahead/stepCount:end_time;
 
-    [times, solution] = DifferentialEquations(x,tspan,rho);
+    solution = DifferentialEquations(x,tspan,rho);
     
     x = [solution(newIndex+1,1), ...
          solution(newIndex+1,2), ...
