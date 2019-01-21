@@ -42,7 +42,7 @@ end
 
 %
 for i=loadPoint:(rhoSteps+1)*(rSteps+1)
-    z(i) = RunSimulation(y(i),x(i));
+    z(i) = run_simulation(y(i),x(i));
     if mod(i,rhoSteps) == 0
         disp(sprintf('%d',i))
     end

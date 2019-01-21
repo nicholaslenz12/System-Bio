@@ -1,4 +1,4 @@
-function values = DifferentialEquations(initialConditions,tspan,rho)
+function values = differential_equations(initialConditions,tspan,rho)
 %SIMULATE Simulates the ode:
 %   R'  = F(R, A)
 %   P'wt = G(R, A)

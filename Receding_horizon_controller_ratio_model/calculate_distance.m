@@ -1,4 +1,4 @@
-function [distance] = CalculateDistance(vector1,vector2)
+function [distance] = calculate_distance(vector1,vector2)
 %CALCULATEDISTANCE computes the Eucllidean distance between two vectors,
 % vector1 and vector2.
 %The inputs for this function are:

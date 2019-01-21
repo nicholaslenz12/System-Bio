@@ -56,8 +56,8 @@ while iteration < endSimulation/recessionLength
     % Simulates for \mu = 0 and \mu = 1. The size of the invasive species
     % is then compared to the reference size at each time step, and a
     % distance is calculated for both values of \mu.
-    [times1, solutions1] = Simulate(x1,tspan,rho);
-    distance1 = CalculateDistance(WT_ref_vec,solutions1(:,1));
+    [times1, solutions1] = differential_equations(x1,tspan,rho);
+    distance1 = calculate_distance(WT_ref_vec,solutions1(:,1));
     
     % If \mu = 0 gets the size of the invasive population closer to the
     % reference, then the controller chooses to have the antibiotic off for

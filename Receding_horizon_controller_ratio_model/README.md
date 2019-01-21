@@ -1,4 +1,4 @@
-# The purpose of the directory is to simulate the growth of the two bacteria populations under the influence of some antibiotic concentration A. 
+# The purpose of the directory is to simulate the growth of the two bacteria populations under the influence of some antibiotic concentration A.
 
 ## The pipeline for plotting a stabilizable region is:
 * Open StabilityRegion.m. First you must choose the values of rho and R to simulate. These are defined by rhoSteps, rhoRange, rSteps, rRange.

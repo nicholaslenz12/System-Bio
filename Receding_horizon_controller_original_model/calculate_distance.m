@@ -1,4 +1,4 @@
-function [distance] = CalculateDistance(vector1,vector2)
+function [distance] = calculate_distance(vector1,vector2)
 %CALCULATEDISTANCE computes the distance between two vectors, vector1 and
 % vector2 given the metric induced by the l2-norm.
 %The inputs for this function are:

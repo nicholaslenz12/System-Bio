@@ -1,7 +1,7 @@
 %%% Deprecated!!! %%
 
 
-function [times, values] = simulate(initial_conditions,tspan,rho)
+function [times, values] = differential_equations(initial_conditions,tspan,rho)
 %SIMULATE Simulates the ode with given inital conditions over a time span.
 %   Simulate numerically integrates the system of ODEs defined as:
 %   WT' = F(WT, C, A)
