@@ -36,11 +36,7 @@ function dvdt = growth_control(t, x)
     dvdt = zeros(size(x));
     
     % Computes R'
-    if -rho*x(3) + rmax > 0
-        dvdt(1) = x(1)*(rho*x(3) - rmax*hill_function(K1,B1,Aeff) - gammawt*hill_function(K1,1,Aeff));
-    else
-        dvdt(1) = x(1)*(rmax*(1 - hill_function(K1,B1,Aeff)) - gammawt*hill_function(K1,1,Aeff));
-    end
+    dvdt(1) = x(1)*(rmax*(1-hill_function(K1,B1,Aeff))-gammawt*hill_function(K1,1,Aeff)-rmax*(1-hill_function(K1,B1,x(3)))+.05);
     
     % Computes P'wt
     dvdt(2) = (rmax*(1 - hill_function(K1,B1,Aeff)) - gammawt*hill_function(K1,1,Aeff))*x(2);

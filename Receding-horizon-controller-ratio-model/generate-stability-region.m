@@ -34,7 +34,6 @@ for i=1:rhoSteps+1
 end
 %%
 
-
 if exist(fileToLoad, 'file') == 2
     z = importdata(fileToLoad);
 else

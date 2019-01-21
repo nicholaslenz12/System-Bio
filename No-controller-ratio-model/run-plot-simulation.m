@@ -27,7 +27,7 @@
 % population ratio (relative to its original size) to 1 if the population
 % ratio is not zero. If the population ratio is zero, then the invasive
 % species population ratio is set to zero, and the simulation is over.
-R_ = 3;
+R_ = 1.078749;
 if R_ > 0
     PropWT_ = 1;
 else
