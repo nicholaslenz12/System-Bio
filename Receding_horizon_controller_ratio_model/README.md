@@ -12,4 +12,4 @@
      * If you end the simulation early, write the matrix z to a file using dlmwrite(). Make sure to record the number of simulations that were completed.
 
 ## File-naming Convention:
-Simulation Datafile: rho-'stepcount'-'lowerbound'-'upperbound'-R-'stepcount'-'lowerbound'-'upperbound'__'iterations completed'
+Simulation Datafile: rho_'stepcount'_'lowerbound'_'upperbound'_R_'stepcount'_'lowerbound'_'upperbound'__'iterations completed'
