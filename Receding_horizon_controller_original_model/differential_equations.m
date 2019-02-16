@@ -9,7 +9,7 @@ function values = differential_equations(initialConditions,tspan)
 %The outputs are:
 % values            : The value of both popoulation ratios and the
 %                     antibiotic concentration at each time step.
-%% Important Parameters
+%% Important Parameters ---------------------------------------------------
 
 rmax = log(2)/20;
 B1 = 1.7;
@@ -19,8 +19,7 @@ gamma = .1;
 gammawt = .1;
 alpha = 70;
 S = 60;
-%% Hill Function
-
+%% Hill Function ----------------------------------------------------------
 %HILL FUNCTION computes the value of the hill function for specific
 % parameters
 %The inputs for this function are:
@@ -36,7 +35,7 @@ function hill_output = hill_function(half_occupation,hill_coefficient,concentrat
     hill_output = (concentration^hill_coefficient) ...
                  /(half_occupation^hill_coefficient + concentration^hill_coefficient);
 end
-%% Time Derivative
+%% Time Derivative --------------------------------------------------------
 
 function dxdt = growth_control(t, x)
 %GROWTH CONTROL Computes the time derivative of P'wt, P'c, and A for state x.
@@ -74,7 +73,7 @@ function dxdt = growth_control(t, x)
         dxdt(3) = -gamma*x(3);
     end
 end
-%% Simulate ODE
+%% Simulate ODE -----------------------------------------------------------
 
 [~, values]=ode45(@growth_control,tspan,initialConditions);
 

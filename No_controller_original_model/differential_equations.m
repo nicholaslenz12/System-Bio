@@ -1,52 +1,71 @@
-function values = differential_equations(initialConditions,tspan,rho)
-%SIMULATE Simulates the ode:
-%   R'  = F(R, A)
-%   P'wt = G(R, A)
-%   A'  = G(A)
-% over a given timespan tspan, with metabolic cost rho.
+function values = differential_equations(initialConditions,tspan)
+%DIFFERENTIALEQUATIONS Simulates the ode:
+%
+% over a given timespan tspan.
 %The inputs for this function are:
 % initialConditions : The initial state of the system.
 % tspan             : A vector of time steps over which the simulation
 %                     runs.
-% rho               : The metablic cost on the controller for producing
-%                     antibiotic.
 %The outputs are:
 % values            : The value of both popoulation ratios and the
 %                     antibiotic concentration at each time step.
-%% Important Parameters
+%% Important Parameters ---------------------------------------------------
 
 rmax = log(2)/20;
 B1 = 1.7;
-K1 = 10;
-gamma = log(2)/20;
+K1 = 5;
+K2 = 1;
+gamma = .1;
 gammawt = .1;
-alpha = 1;
-%% Hill Function
+alpha = 70;
+S = 60;
+%% Hill Function ----------------------------------------------------------
+%HILL FUNCTION computes the value of the hill function for specific
+% parameters
+%The inputs for this function are:
+% half_occupation  : The half occupation. In otherwords, when the
+%                  concentration of molecule reaches half_occupation, the
+%                  hill output is exactly 0.5.
+% hill_coefficient : cooperative binding coefficient.  
+% concentration    : concentration of the molecule.
+%The outputs are:
+% hill_output      : saturation between [0,1].
 
 function hill_output = hill_function(half_occupation,hill_coefficient,concentration)
     hill_output = (concentration^hill_coefficient) ...
                  /(half_occupation^hill_coefficient + concentration^hill_coefficient);
 end
-%% Time Derivative
+%% Time Derivative --------------------------------------------------------
 
-function dvdt = growth_control(t, x)
-    % Sets the effective antibiotic concentration, which is Pc*A/Pwt or
-    % A/R. The vector of the derivatives is pre-allocated.
-    Aeff = x(3)/x(1);
-    dvdt = zeros(size(x));
+function dxdt = growth_control(t, x)
+%GROWTH CONTROL Computes the time derivative of P'wt, P'c, and A for state x.
+%The inputs for this function are:
+% t : unused!
+% x : The state of the system where:
+%     x(1) == P'wt
+%     x(2) == P'c
+%     x(3) == A
+
+    Aeff = x(2)*x(3)/x(1); % Computes the effective concentration of the antibiotic.
     
-    % Computes R'
-    dvdt(1) = x(1)*(rmax*(1-hill_function(K1,B1,Aeff))-gammawt*hill_function(K1,1,Aeff)-rmax*(1-hill_function(K1,B1,x(3)))+.05);
+    dxdt = zeros(size(x)); % Initializes the time derivative vector.
     
     % Computes P'wt
-    dvdt(2) = (rmax*(1 - hill_function(K1,B1,Aeff)) - gammawt*hill_function(K1,1,Aeff))*x(2);
-    
-    % Computes A'
-    if x(4) == 1
-        dvdt(3) = alpha - gamma*x(3);
+    if x(1) > .0001
+        dxdt(1) = (rmax*(1-hill_function(K1,B1,Aeff)))*x(1)*(1-(x(1)+x(2))/(x(1)+x(2)+ S))-gammawt*Aeff;
     else
-        dvdt(3) = -gamma*x(3);
+        dxdt(1) = 0;
     end
+        
+    % Computes P'c
+    if x(2) > .0001
+        dxdt(2) = (rmax*(1 - hill_function(K2,B1,x(3))))*x(2)*(1-(x(1)+x(2))/(x(1)+x(2)+ S));
+    else
+        dxdt(1) = 0;
+    end
+        
+    % Computes A for chosen proportions of \alpha.
+    dxdt(3) = alpha - gamma*x(3);
 end
 %% Simulate ODE
 

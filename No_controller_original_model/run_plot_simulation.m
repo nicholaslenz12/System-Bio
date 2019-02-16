@@ -16,37 +16,34 @@
 % WT_0 = the intial size of the invasive population.
 % C_0  = the inital size of the controller population.
 % A_0  = the inital antibiotic concentration.
-%% Inputs section
+%% Inputs section ---------------------------------------------------------
 
-WT_0 = 0;
-C_0  = 25;
+WT_0 = 10;
+C_0  = 5;
 A_0 = 0;
-x1 = [WT_0, C_0, A_0, 1];
-%% Other variables/constants
+%% Other variables/constants ----------------------------------------------
 
-rmax = log(2)/20;
-B1 = 1.7;
-K1 = 10;
-B2 = 1.7;
-K2 = 10;
-gamma = log(2)/20;
-gammawt = .1;
-alpha = 1;
+gamma = .1;
 
-start_time = 0;
-solutions  = [start_time, WT_0, C_0, A_0, 0];
-
+%---- Simulation Parameters ----
 lookahead  = 30;
 recessionLength = 10;
-ratio = recessionLength/lookahead;
 step_count = 100;
+endSimulation  = 100;
+
+ratio = recessionLength/lookahead;
 new_index = cast(step_count*ratio, 'int32');
-endSimulation  = 10000;
-%% Perform RHC
 
-iterations_run = 0;
+%---- Initialization ----
+start_time = 0;
+solutions  = [start_time, WT_0, C_0, A_0, 0];
+x1 = [WT_0, C_0, A_0, 1];
 
-while iterations_run < endSimulation/recessionLength
+%% Perform RHC ------------------------------------------------------------
+
+iteration = 0;
+
+while iteration < endSimulation/recessionLength
     
     % Generates the each timestep in the iteration.
     end_time = start_time + lookahead;
@@ -55,7 +52,7 @@ while iterations_run < endSimulation/recessionLength
     % Simulates for \mu = 0 and \mu = 1. The size of the invasive species
     % is then compared to the reference size at each time step, and a
     % distance is calculated for both values of \mu.
-    [times1, solutions1] = differential_equations(x1,tspan);
+    solutions1 = differential_equations(x1,tspan);
     
     x1 = [solutions1(new_index+1,1), ...
           solutions1(new_index+1,2), ...
@@ -67,14 +64,14 @@ while iterations_run < endSimulation/recessionLength
                  solutions1(2:new_index+1,:)];
     start_time = start_time + recessionLength;
     
-    iterations_run = iterations_run + 1;
+    iteration = iteration + 1;
 end
-%% Plot Solutions
+%% Plot Solutions ---------------------------------------------------------
 
 master_xlim = [0 endSimulation];
 figure('Renderer', 'painters', 'Position', [720 450 600 400])
 
-% Population Size Plot
+%---- Population Size Plot ----
 subplot(2,3,[1 2 4 5])
 plot(solutions(:,1),(solutions(:,2)),'LineWidth',2,'Color',[1 0 0])
 hold on
@@ -87,7 +84,7 @@ xlabel('Time')
 ylabel('Population Size')
 title('Bacteria Populations')
 
-% Antibiotic Concentration Plot
+%---- Antibiotic Concentration Plot ----
 subplot(2,3,3)
 plot(solutions(:,1),(solutions(:,4)),'LineWidth',2,'Color',[1 0.5 0])
 hold on
@@ -99,7 +96,7 @@ xlabel('Time')
 ylabel('Concentration')
 title('Antibiotic Concentration')
 
-% Switch State Plot
+%---- Switch State Plot ----
 subplot(2,3,6)
 switch_state = area(solutions(:,1),(solutions(:,5)));
 set(switch_state,'facealpha',.5)

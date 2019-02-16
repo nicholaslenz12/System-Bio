@@ -13,8 +13,9 @@
 % produced.
 
 %The inputs for system are:
-% wT_0 = the intial size of the invasive population.
+% WT_0 = the intial size of the invasive population.
 % C_0  = the inital size of the controller population.
+% A_0  = the inital antibiotic concentration.
 %% Inputs section ---------------------------------------------------------
 
 WT_0 = 100;
@@ -27,12 +28,13 @@ gamma = .1;
 %---- Simulation Parameters ----
 lookahead = 20;
 recessionLength = 10;
-ratio = recessionLength/lookahead;
 step_count = 200;
+endSimulation  = 1000;
+
+ratio = recessionLength/lookahead;
 new_index = cast(step_count*ratio, 'int32');
 threshold      = 20;
 distances      = threshold + .01;
-endSimulation  = 1000;
 
 %---- Initialization ----
 start_time = 0;
