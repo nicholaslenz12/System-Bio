@@ -15,33 +15,33 @@
 %The inputs for system are:
 % wT_0 = the intial size of the invasive population.
 % C_0  = the inital size of the controller population.
-% rho  = the metabolic cost on the controller for producing the antibiotic.
-%        values should be in the set [0,100], where 0 corresponds to no
-%        cost and larger values correspond to higher costs.
-%% Inputs section
+%% Inputs section ---------------------------------------------------------
 
-WT_0 = 15;
-C_0  = 5;
-rho  = .01;
-%% Other variables/constants
-
+WT_0 = 100;
+C_0  = 10;
 A_0 = 0;
-x1 = [WT_0, C_0, A_0, 0];
-x2 = [WT_0, C_0, A_0, 1];
+%% Other variables/constants ----------------------------------------------
 
-start_time = 0;
-WT_ref     = WT_0;
-solutions  = [start_time, WT_0, C_0, A_0, 0, WT_ref];
+gamma = .1;
 
-lookahead  = 30;
+%---- Simulation Parameters ----
+lookahead = 20;
 recessionLength = 10;
 ratio = recessionLength/lookahead;
-step_count = 100;
+step_count = 200;
 new_index = cast(step_count*ratio, 'int32');
-threshold      = 30;
+threshold      = 20;
 distances      = threshold + .01;
-endSimulation  = 10000;
-%% Perform RHC
+endSimulation  = 1000;
+
+%---- Initialization ----
+start_time = 0;
+WT_ref = WT_0;
+x1     = [WT_0, C_0, A_0, 0];
+x2     = [WT_0, C_0, A_0, 1];
+x3     = [WT_0, C_0, A_0, 2];
+solutions  = [start_time, WT_0, C_0, A_0, 0, WT_ref];
+%% Perform RHC ------------------------------------------------------------
 
 iteration = 0;
 
@@ -54,20 +54,22 @@ while iteration < endSimulation/recessionLength
     % Sets the reference for each time in the time span.
     WT_ref_vec = WT_ref.*ones(size(tspan)).';
     
-    % Simulates for \mu = 0 and \mu = 1. The size of the invasive species
-    % is then compared to the reference size at each time step, and a
-    % distance is calculated for both values of \mu.
-    [times1, solutions1] = differential_equations(x1,tspan,rho);
-    [times2, solutions2] = differential_equations(x2,tspan,rho);
+    % Simulates the system for selected values of \alpha. The error between
+    % WT_ref and WT over 'lookahead' minutes is computed for each
+    % simulation.
+    solutions1 = differential_equations(x1,tspan);
+    solutions2 = differential_equations(x2,tspan);
+    solutions3 = differential_equations(x3,tspan);
     distance1 = calculate_distance(WT_ref_vec,solutions1(:,1));
     distance2 = calculate_distance(WT_ref_vec,solutions2(:,1));
+    distance3 = calculate_distance(WT_ref_vec,solutions3(:,1));
     
     % If \mu = 0 gets the size of the invasive population closer to the
     % reference, then the controller chooses to have the antibiotic off for
     % the next recessionLength minutes of the simulation. Solutions gets
     % newIndex new "snapshots" of the parameters appended to it. Time moves
     % forward recessionLength minutes and the initial conditions are reset.
-    if distance1 <= distance2
+    if distance1 == min([distance1 distance2 distance3])
         x1 = [solutions1(new_index+1,1), ...
               solutions1(new_index+1,2), ...
               solutions1(new_index+1,3), ...
@@ -76,13 +78,17 @@ while iteration < endSimulation/recessionLength
               solutions1(new_index+1,2), ...
               solutions1(new_index+1,3), ...
               1];
+        x3 = [solutions1(new_index+1,1), ...
+              solutions1(new_index+1,2), ...
+              solutions1(new_index+1,3), ...
+              2];
         solutions = [solutions; ...
                      tspan(2:new_index+1).', ...
                      solutions1(2:new_index+1,:), ...
                      WT_ref_vec(2:new_index+1)];
         distances = [distances;distance1];
         start_time = start_time + recessionLength;
-    else
+    elseif distance2 == min([distance1 distance2 distance3])
         x1 = [solutions2(new_index+1,1), ...
               solutions2(new_index+1,2), ...
               solutions2(new_index+1,3), ...
@@ -91,11 +97,34 @@ while iteration < endSimulation/recessionLength
               solutions2(new_index+1,2), ...
               solutions2(new_index+1,3), ...
               1];
+        x3 = [solutions2(new_index+1,1), ...
+              solutions2(new_index+1,2), ...
+              solutions2(new_index+1,3), ...
+              2];
         solutions = [solutions; ...
                      tspan(2:new_index+1).', ...
                      solutions2(2:new_index+1,:), ...
                      WT_ref_vec(2:new_index+1)];
         distances = [distances;distance2];
+        start_time = start_time + recessionLength;
+    else
+        x1 = [solutions3(new_index+1,1), ...
+              solutions3(new_index+1,2), ...
+              solutions3(new_index+1,3), ...
+              0];
+        x2 = [solutions3(new_index+1,1), ...
+              solutions3(new_index+1,2), ...
+              solutions3(new_index+1,3), ...
+              1];
+        x3 = [solutions3(new_index+1,1), ...
+              solutions3(new_index+1,2), ...
+              solutions3(new_index+1,3), ...
+              2];
+        solutions = [solutions; ...
+                     tspan(2:new_index+1).', ...
+                     solutions3(2:new_index+1,:), ...
+                     WT_ref_vec(2:new_index+1)];
+        distances = [distances;distance3];
         start_time = start_time + recessionLength;
     end
     
@@ -108,21 +137,47 @@ while iteration < endSimulation/recessionLength
     
     iteration = iteration + 1;
 end
-%% Plot Solutions
+%% Plot Solutions ---------------------------------------------------------
 
+master_xlim = [0 endSimulation];
+figure('Renderer', 'painters', 'Position', [720 450 600 400])
+
+%---- Population Size Plot ----
+subplot(2,3,[1 2 4 5])
 plot(solutions(:,1),(solutions(:,2)),'LineWidth',2,'Color',[1 0 0])
 hold on
 plot(solutions(:,1),(solutions(:,3)),'LineWidth',2,'Color',[0 0 1])
 hold on
-plot(solutions(:,1),(solutions(:,6)),'LineWidth',2,'Color',[1 0.5 0])
+plot(solutions(:,1),(solutions(:,6)),'LineWidth',2,'Color',[0 1 0])
 hold on
-plot(solutions(:,1),0.5*C_0*(solutions(:,5)),'LineWidth',1.5,'Color',[0.5 1 0])
-hold on
-plot(solutions(:,1),(solutions(:,4)),'LineWidth',2,'Color',[0 1 0])
-legend('Invasive Pop.', 'Controller Pop.', 'Target Size', 'State','A')
-hold off
-xlim([0 150])
-xlabel('Time (minutes)')
-title('Population Dynamics')
+xlim(master_xlim)
+ylim([0 inf])
+legend('Invasive Pop.', 'Controller Pop.','Target Pop.')
 grid on
+xlabel('Time')
+ylabel('Population Size')
+title('Bacteria Populations')
+
+%---- Antibiotic Concentration Plot ----
+subplot(2,3,3)
+plot(solutions(:,1),(solutions(:,4)),'LineWidth',2,'Color',[1 0.5 0])
+hold on
+plot(master_xlim,[1/gamma 1/gamma],'LineWidth',1.5,'LineStyle','--',...
+                                   'Color',[1 0.5 0])
+xlim(master_xlim)
+grid on
+xlabel('Time')
+ylabel('Concentration')
+title('Antibiotic Concentration')
+
+%---- Switch State Plot ----
+subplot(2,3,6)
+switch_state = area(solutions(:,1),(solutions(:,5)));
+set(switch_state,'facealpha',.5)
+xlim(master_xlim)
+grid on
+xlabel('Time')
+ylabel('On / Off')
+title('Switch State')
+
 
