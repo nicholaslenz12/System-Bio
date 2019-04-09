@@ -19,11 +19,12 @@
 %% Inputs section ---------------------------------------------------------
 
 WT_0 = 100;
-C_0  = 10;
+C_0  = 50;
 A_0 = 0;
+M_0 = 0;
 %% Other variables/constants ----------------------------------------------
 
-gamma = .1;
+gamma = log(2)/20;
 
 %---- Simulation Parameters ----
 lookahead = 20;
@@ -38,11 +39,11 @@ distances      = threshold + .01;
 
 %---- Initialization ----
 start_time = 0;
-WT_ref = WT_0;
-x1     = [WT_0, C_0, A_0, 0];
-x2     = [WT_0, C_0, A_0, 1];
-x3     = [WT_0, C_0, A_0, 2];
-solutions  = [start_time, WT_0, C_0, A_0, 0, WT_ref];
+WT_ref = 2*WT_0; %<<<<<<<<<<<<<
+x1     = [WT_0, C_0, A_0, M_0, 0];
+x2     = [WT_0, C_0, A_0, M_0, 1];
+x3     = [WT_0, C_0, A_0, M_0, 2];
+solutions  = [start_time, WT_0, C_0, A_0, M_0, 0, WT_ref];
 %% Perform RHC ------------------------------------------------------------
 
 iteration = 0;
@@ -59,9 +60,9 @@ while iteration < endSimulation/recessionLength
     % Simulates the system for selected values of \alpha. The error between
     % WT_ref and WT over 'lookahead' minutes is computed for each
     % simulation.
-    solutions1 = differential_equations(x1,tspan);
-    solutions2 = differential_equations(x2,tspan);
-    solutions3 = differential_equations(x3,tspan);
+    [solutions1] = differential_equations(x1,tspan);
+    [solutions2] = differential_equations(x2,tspan);
+    [solutions3] = differential_equations(x3,tspan);
     distance1 = calculate_distance(WT_ref_vec,solutions1(:,1));
     distance2 = calculate_distance(WT_ref_vec,solutions2(:,1));
     distance3 = calculate_distance(WT_ref_vec,solutions3(:,1));
@@ -75,14 +76,17 @@ while iteration < endSimulation/recessionLength
         x1 = [solutions1(new_index+1,1), ...
               solutions1(new_index+1,2), ...
               solutions1(new_index+1,3), ...
+              solutions1(new_index+1,4), ...
               0];
         x2 = [solutions1(new_index+1,1), ...
               solutions1(new_index+1,2), ...
               solutions1(new_index+1,3), ...
+              solutions1(new_index+1,4), ...
               1];
         x3 = [solutions1(new_index+1,1), ...
               solutions1(new_index+1,2), ...
               solutions1(new_index+1,3), ...
+              solutions1(new_index+1,4), ...
               2];
         solutions = [solutions; ...
                      tspan(2:new_index+1).', ...
@@ -94,14 +98,17 @@ while iteration < endSimulation/recessionLength
         x1 = [solutions2(new_index+1,1), ...
               solutions2(new_index+1,2), ...
               solutions2(new_index+1,3), ...
+              solutions2(new_index+1,4), ...
               0];
         x2 = [solutions2(new_index+1,1), ...
               solutions2(new_index+1,2), ...
               solutions2(new_index+1,3), ...
+              solutions2(new_index+1,4), ...
               1];
         x3 = [solutions2(new_index+1,1), ...
               solutions2(new_index+1,2), ...
               solutions2(new_index+1,3), ...
+              solutions2(new_index+1,4), ...
               2];
         solutions = [solutions; ...
                      tspan(2:new_index+1).', ...
@@ -113,14 +120,17 @@ while iteration < endSimulation/recessionLength
         x1 = [solutions3(new_index+1,1), ...
               solutions3(new_index+1,2), ...
               solutions3(new_index+1,3), ...
+              solutions3(new_index+1,4), ...
               0];
         x2 = [solutions3(new_index+1,1), ...
               solutions3(new_index+1,2), ...
               solutions3(new_index+1,3), ...
+              solutions3(new_index+1,4), ...
               1];
         x3 = [solutions3(new_index+1,1), ...
               solutions3(new_index+1,2), ...
               solutions3(new_index+1,3), ...
+              solutions3(new_index+1,4), ...
               2];
         solutions = [solutions; ...
                      tspan(2:new_index+1).', ...
@@ -130,12 +140,26 @@ while iteration < endSimulation/recessionLength
         start_time = start_time + recessionLength;
     end
     
+    % If it's the case that one of the states is not positive
+    if ~isequal(all(solutions >= 0),[1 1 1 1 1 1 1])
+        last_index = Inf;
+        for i=1:7
+            j = find(solutions(:,i) < 0,1);
+            if j < last_index
+                last_index = j;
+            end
+        end
+        solutions = solutions(1:last_index-1,:);
+        break
+    end
+    
+    
+    
     % If two succesive iterations are small, then the reference size is
     % reduced to 95 percent of its value.
     if distances(end) < threshold && distances(end-1) < threshold
-        WT_ref = .95*WT_ref;
+        WT_ref = 1*WT_ref;
     end
-    
     
     iteration = iteration + 1;
 end
@@ -146,15 +170,17 @@ figure('Renderer', 'painters', 'Position', [720 450 600 400])
 
 %---- Population Size Plot ----
 subplot(2,3,[1 2 4 5])
-plot(solutions(:,1),(solutions(:,2)),'LineWidth',2,'Color',[1 0 0])
+plot(solutions(:,1),(solutions(:,7)),'LineWidth',1.5,'Color',[0 1 0])
 hold on
-plot(solutions(:,1),(solutions(:,3)),'LineWidth',2,'Color',[0 0 1])
+plot(solutions(:,1),(solutions(:,2)),'LineWidth',1.5,'Color',[1 0 0])
 hold on
-plot(solutions(:,1),(solutions(:,6)),'LineWidth',2,'Color',[0 1 0])
+plot(solutions(:,1),(solutions(:,3)),'LineWidth',1.5,'Color',[0 0 1])
+hold on
+plot(solutions(:,1),(solutions(:,5)),'LineWidth',1.5,'Color',[0 0.5 1])
 hold on
 xlim(master_xlim)
 ylim([0 inf])
-legend('Invasive Pop.', 'Controller Pop.','Target Pop.')
+legend('Target Pop.', 'Invasive Pop.', 'Controller Pop.', 'Metabolite')
 grid on
 xlabel('Time')
 ylabel('Population Size')
@@ -162,7 +188,7 @@ title('Bacteria Populations')
 
 %---- Antibiotic Concentration Plot ----
 subplot(2,3,3)
-plot(solutions(:,1),(solutions(:,4)),'LineWidth',2,'Color',[1 0.5 0])
+plot(solutions(:,1),(solutions(:,4)),'LineWidth',1.5,'Color',[1 0.5 0])
 hold on
 plot(master_xlim,[1/gamma 1/gamma],'LineWidth',1.5,'LineStyle','--',...
                                    'Color',[1 0.5 0])
@@ -174,12 +200,10 @@ title('Antibiotic Concentration')
 
 %---- Switch State Plot ----
 subplot(2,3,6)
-switch_state = area(solutions(:,1),(solutions(:,5)));
+switch_state = area(solutions(:,1),(solutions(:,6)));
 set(switch_state,'facealpha',.5)
 xlim(master_xlim)
 grid on
 xlabel('Time')
 ylabel('On / Off')
 title('Switch State')
-
-
