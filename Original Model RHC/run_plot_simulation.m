@@ -49,14 +49,14 @@ solutions  = [start_time, WT_0, C_0, A_0, M_0, 0, WT_ref];
 iteration = 0;
 
 while iteration < endSimulation/recessionLength
-    
+
     % Generates the each timestep in the iteration.
     end_time = start_time + lookahead;
     tspan=start_time:lookahead/step_count:end_time;
-    
+
     % Sets the reference for each time in the time span.
     WT_ref_vec = WT_ref.*ones(size(tspan)).';
-    
+
     % Simulates the system for selected values of \alpha. The error between
     % WT_ref and WT over 'lookahead' minutes is computed for each
     % simulation.
@@ -66,7 +66,7 @@ while iteration < endSimulation/recessionLength
     distance1 = calculate_distance(WT_ref_vec,solutions1(:,1));
     distance2 = calculate_distance(WT_ref_vec,solutions2(:,1));
     distance3 = calculate_distance(WT_ref_vec,solutions3(:,1));
-    
+
     % If \mu = 0 gets the size of the invasive population closer to the
     % reference, then the controller chooses to have the antibiotic off for
     % the next recessionLength minutes of the simulation. Solutions gets
@@ -139,7 +139,7 @@ while iteration < endSimulation/recessionLength
         distances = [distances;distance3];
         start_time = start_time + recessionLength;
     end
-    
+
     % If it's the case that one of the states is not positive
     if ~isequal(all(solutions >= 0),[1 1 1 1 1 1 1])
         last_index = Inf;
@@ -152,15 +152,15 @@ while iteration < endSimulation/recessionLength
         solutions = solutions(1:last_index-1,:);
         break
     end
-    
-    
-    
+
+
+
     % If two succesive iterations are small, then the reference size is
     % reduced to 95 percent of its value.
     if distances(end) < threshold && distances(end-1) < threshold
         WT_ref = 1*WT_ref;
     end
-    
+
     iteration = iteration + 1;
 end
 %% Plot Solutions ---------------------------------------------------------
