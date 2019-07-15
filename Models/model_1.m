@@ -56,22 +56,26 @@ function dxdt = growth_control(t, x)
 %      vector of state variables x = (Pwt, Pc, A, u)
 %Rets
 %
-    Aeff = x(2)*x(3)/x(1); % Effective concentration of the antibiotic.
+    Pwt = x(1);
+    Pc  = x(2);
+    A   = x(3);
+    u   = x(4);
+    Aeff = Pc*A/Pwt; % Effective concentration of the antibiotic.
     dxdt = zeros(size(x)); % Initializes the derivative.
 
     % Computes P'wt
-    dxdt(1) = r1*(1 - hill_function(K1, B1, Aeff))*x(1) - gammawt*Aeff*x(1);
+    dxdt(1) = r1*(1 - hill_function(K1, B1, Aeff))*Pwt - gammawt*Aeff*Pwt;
 
     % Computes P'c
-    dxdt(2) = r2*(1 - hill_function(K2, B2, x(3)))*x(2) - gammac*x(2);
+    dxdt(2) = r2*(1 - hill_function(K2, B2, A))*Pc - gammac*Pc;
 
     % Computes A for chosen proportions of alpha.
-    if x(4) == 2
-        dxdt(3) = alpha/2 - gamma*x(3);
-    elseif x(4) == 3
-        dxdt(3) = alpha - gamma*x(3);
-    else
+    if u == 1
         dxdt(3) = -gamma*x(3);
+    elseif u == 2
+        dxdt(3) = alpha/2 - gamma*x(3);
+    else
+        dxdt(3) = alpha - gamma*x(3);
     end
 end
 

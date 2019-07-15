@@ -1,16 +1,17 @@
 function [values] = model_2(initialConditions,tspan)
-%% MODEL_2 Simulates the ODE:
-%  Pwt' = f(Pwt, Pc, A)
-%  Pc'  = g(Pwt, Pc, A)
+%% MODEL_3 Simulates the ODE:
+%  Pwt' = f(Pwt, Pc, A, M)
+%  Pc'  = g(Pwt, Pc, A, M)
 %  A'   = h(A)
+%  M'   = k(M)
 %Args
 %  initialConditions
-%      Initial values for Pwt, Pc, A
+%      Initial values for Pwt, Pc, A, and M
 %  tspan
 %      Length of simulation time.
 %Rets
 %  values
-%      The state of Pwt, Pc, A at given time steps in the simulation
+%      The state of Pwt, Pc, A, and M at given time steps in the simulation
 
 %% ------------------------------------------------------------------------
 % PARAMETERS
@@ -26,6 +27,9 @@ gammawt = 0.01*r1;
 gammac = 0.001*r2;
 gamma = log(2)/40;
 S = 30;
+alpham = 1;
+gammam = log(2)/20;
+Km = 1;
 
 function saturation = hill_function(half_occupation,hill_coefficient,concentration)
 %% HILL_FUNCTION
@@ -60,8 +64,10 @@ function dxdt = growth_control(t, x)
     Pwt = x(1);
     Pc  = x(2);
     A   = x(3);
-    u   = x(4);
+    M   = x(4);
+    u   = x(5);
     Aeff = Pc*A/Pwt; % Effective concentration of the antibiotic.
+    Meff = Pwt*M/Pc; % Effective concentration of the metabolite.
     dxdt = zeros(size(x)); % Initializes the derivative.
 
     % Computes P'wt
@@ -70,7 +76,7 @@ function dxdt = growth_control(t, x)
 
     % Computes P'c
     dxdt(2) = r2*(1 - hill_function(K2, B2, A))*Pc*(1 - (Pwt+Pc)/(Pwt+Pc + S)) ...
-              - gammac*Pc;
+              *(Meff/(Km + Meff))- gammac*Pc;
 
     % Computes A for chosen proportions of alpha.
     if u == 1
@@ -80,6 +86,9 @@ function dxdt = growth_control(t, x)
     else
         dxdt(3) = alpha - gamma*x(3);
     end
+
+    % Computes M
+    dxdt(4) = alpham - gammam*M;
 end
 
 %% ------------------------------------------------------------------------
