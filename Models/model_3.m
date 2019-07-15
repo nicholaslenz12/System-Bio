@@ -1,4 +1,4 @@
-function [values] = model_2(initialConditions,tspan)
+function [values] = model_3(initialConditions,tspan)
 %% MODEL_3 Simulates the ODE:
 %  Pwt' = f(Pwt, Pc, A, M)
 %  Pc'  = g(Pwt, Pc, A, M)
@@ -20,13 +20,13 @@ r1 = log(2)/20;
 r2 = log(2)/40;
 alpha = 0.01;
 K1 = 0.01;
-K2 = 3;
+K2 = 1;
 B1 = 1.5;
 B2 = 1.5;
 gammawt = 0.01*r1;
-gammac = 0.001*r2;
+gammac = 0.01*r2;
 gamma = log(2)/40;
-S = 30;
+S = 3;
 alpham = 1;
 gammam = log(2)/20;
 Km = 1;
