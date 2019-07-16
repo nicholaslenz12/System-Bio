@@ -11,7 +11,7 @@ func = str2func(model);
 % INITIAL CONDITIONS
 % -------------------------------------------------------------------------
 WT_0 = 100;
-C_0  = 50;
+C_0  = 10;
 A_0 = 0;
 M_0 = 0;
 
@@ -21,7 +21,7 @@ M_0 = 0;
 lookahead = 20;
 recessionLength = 10;
 step_count = 200;
-endSimulation  = 10000;
+endSimulation  = 100000;
 ratio = recessionLength/lookahead;
 new_index = cast(step_count*ratio, 'int32');
 threshold = 20;
@@ -163,11 +163,12 @@ title('Switch State')
 % SAVE FIGURE
 % -------------------------------------------------------------------------
 filename = model;
+filename__ = model;
 iterator = 1;
 
 % Incremental file-naming
 while isfile(strcat(filename,'.pdf'))
-    filename = strcat(filename, '_', num2str(iterator));
+    filename = strcat(filename__, '_', num2str(iterator));
     iterator = iterator + 1;
 end
 print('-bestfit',filename,'-dpdf')

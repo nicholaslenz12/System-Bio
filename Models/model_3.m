@@ -18,13 +18,13 @@ function [values] = model_3(initialConditions,tspan)
 % -------------------------------------------------------------------------
 r1 = log(2)/20;
 r2 = log(2)/40;
-alpha = 0.01;
-K1 = 0.01;
-K2 = 1;
+alpha = 0.1;
+K1 = .1;
+K2 = 8;
 B1 = 1.5;
 B2 = 1.5;
 gammawt = 0.01*r1;
-gammac = 0.01*r2;
+gammac = 0.003*r2;
 gamma = log(2)/40;
 S = 3;
 alpham = 1;
