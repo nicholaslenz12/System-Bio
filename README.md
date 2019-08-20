@@ -14,4 +14,4 @@ Mathematical models for the wild-type, controller, antibiotic, and metabolite gr
 3) Degradation term, carrying capacity, and metabolite.
 
 #### RHC
-Runs a receding horizon control algorithm for a model from Models. Various parameters for the algorithm can be adjusted from inside the script.
+Runs a receding horizon control (RHC) algorithm for a model from Models. Various parameters for the algorithm can be adjusted from inside the script.

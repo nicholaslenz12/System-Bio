@@ -20,16 +20,16 @@ r1 = log(2)/20;
 r2 = log(2)/40;
 alpha = 0.1;
 K1 = .1;
-K2 = 8;
+K2 = 3;
 B1 = 1.5;
 B2 = 1.5;
 gammawt = 0.01*r1;
 gammac = 0.003*r2;
 gamma = log(2)/40;
-S = 3;
-alpham = 1;
-gammam = log(2)/20;
-Km = 1;
+S = 100;
+alpham = .1;
+gammam = log(2)/40;
+Km = 5;
 
 function saturation = hill_function(half_occupation,hill_coefficient,concentration)
 %% HILL_FUNCTION
@@ -88,7 +88,7 @@ function dxdt = growth_control(t, x)
     end
 
     % Computes M
-    dxdt(4) = alpham - gammam*M;
+    dxdt(4) = (alpham - gammam*M);
 end
 
 %% ------------------------------------------------------------------------

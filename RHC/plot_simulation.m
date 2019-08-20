@@ -3,25 +3,27 @@
 %% ------------------------------------------------------------------------
 % MODEL SELECTION
 % -------------------------------------------------------------------------
+clear all
 addpath('../Models')
 model = 'model_3';
 func = str2func(model);
+save_figure = 0;
 
 %% ------------------------------------------------------------------------
 % INITIAL CONDITIONS
 % -------------------------------------------------------------------------
-WT_0 = 100;
-C_0  = 10;
+WT_0 = 150;
+C_0  = 50;
 A_0 = 0;
 M_0 = 0;
 
 %% ------------------------------------------------------------------------
 % SIMULATION PARAMETERS
 % -------------------------------------------------------------------------
-lookahead = 20;
-recessionLength = 10;
+lookahead = 10;
+recessionLength = 3;
 step_count = 200;
-endSimulation  = 100000;
+endSimulation = 1000;
 ratio = recessionLength/lookahead;
 new_index = cast(step_count*ratio, 'int32');
 threshold = 20;
@@ -42,11 +44,13 @@ if ~strcmp(model, 'model_1') && ~strcmp(model, 'model_2') && ~strcmp(model, 'mod
 end
 
 if strcmp(model, 'model_1') || strcmp(model, 'model_2')
+    number_of_states = 6;
     for idx=1:scenario_count
         x = [x;WT_0, C_0, A_0, idx];
         solutions = [start_time, WT_0, C_0, A_0, 1, WT_ref];
     end
 else
+    number_of_states = 7;
     for idx=1:scenario_count
         x = [x;WT_0, C_0, A_0, M_0, idx];
         solutions = [start_time, WT_0, C_0, A_0, M_0, 1, WT_ref];
@@ -89,6 +93,25 @@ while iteration < endSimulation/recessionLength
                 predicted_solutions(2:new_index+1,:,min_idx), ...
                 WT_ref_vec(2:new_index+1)];
 
+    if number_of_states == 6
+        truth_vector = ones(1,6);
+    else
+        truth_vector = ones(1,7);
+    end
+
+    if ~isequal(all(solutions >= 0),truth_vector)
+        last_index = Inf;
+        for i=1:number_of_states
+            j = find(solutions(:,i) < 0,1);
+            if j < last_index
+                last_index = j;
+            end
+        end
+        solutions = solutions(1:last_index-1,:);
+        disp(sprintf('>>>> Warning: Simulation ended due to population crash. <<<<'))
+        break
+    end
+
     % Record minimum distance.
     distances = [distances; min_distance];
 
@@ -107,17 +130,17 @@ figure('Renderer', 'painters', 'Position', [720 450 600 400])
 % -------------------------------------------------------------------------
 subplot(2,3,[1 2 4 5])
 if strcmp(model, 'model_3')
-    plot(solutions(:,1),(solutions(:,7)),'LineWidth',1,'Color',[0 1 0])
+    plot(solutions(:,1),solutions(:,7),'LineWidth',1,'Color',[0 1 0])
     hold on
-    plot(solutions(:,1),(solutions(:,5)),'LineWidth',1,'Color',[0 0.5 1])
+    plot(solutions(:,1),solutions(:,5),'LineWidth',1,'Color',[0 0.5 1])
     hold on
 else
-    plot(solutions(:,1),(solutions(:,6)),'LineWidth',1,'Color',[0 1 0])
+    plot(solutions(:,1),solutions(:,6),'LineWidth',1,'Color',[0 1 0])
     hold on
 end
-plot(solutions(:,1),(solutions(:,2)),'LineWidth',1,'Color',[1 0 0])
+plot(solutions(:,1),real(solutions(:,2)),'LineWidth',1,'Color',[1 0 0])
 hold on
-plot(solutions(:,1),(solutions(:,3)),'LineWidth',1,'Color',[0 0 1])
+plot(solutions(:,1),real(solutions(:,3)),'LineWidth',1,'Color',[0 0 1])
 hold on
 if strcmp(model, 'model_3')
     legend('Target Pop.', 'Metabolite', 'Invasive Pop.', 'Controller Pop.')
@@ -171,7 +194,11 @@ while isfile(strcat(filename,'.pdf'))
     filename = strcat(filename__, '_', num2str(iterator));
     iterator = iterator + 1;
 end
-print('-bestfit',filename,'-dpdf')
+
+% Save the figure?
+if save_figure
+    print('-bestfit',filename,'-dpdf')
+end
 
 %% ------------------------------------------------------------------------
 % FUNCTIONS
