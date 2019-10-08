@@ -5,7 +5,7 @@ Two bacteria species are competing for space, food, etc. in a environment. One s
 
 ## Directories
 #### Bifurcation Analysis
-(Deprecated) Generates a plot demonsrating for what combinations of paramter values the wild-type species' concentration remains bounded in time. Needs heavy improvement.
+(Deprecated) Generates a plot demonstrating for what combinations of paramter values the wild-type species' concentration remains bounded in time. Needs heavy improvement.
 
 #### Models
 Mathematical models for the wild-type, controller, antibiotic, and metabolite growth rates. Currently there are three models, each more advanced at slowing the growth rate of the controller:

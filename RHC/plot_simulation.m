@@ -5,25 +5,25 @@
 % -------------------------------------------------------------------------
 clear all
 addpath('../Models')
-model = 'model_3';
+model = 'model_2';
 func = str2func(model);
 save_figure = 0;
 
 %% ------------------------------------------------------------------------
 % INITIAL CONDITIONS
 % -------------------------------------------------------------------------
-WT_0 = 150;
-C_0  = 50;
-A_0 = 0;
-M_0 = 0;
+A_0  = 57.4115;
+WT_0 = 320.9088;
+C_0  = 3.2091;
+M_0  = 0;
 
 %% ------------------------------------------------------------------------
 % SIMULATION PARAMETERS
 % -------------------------------------------------------------------------
 lookahead = 10;
-recessionLength = 3;
+recessionLength = 10;
 step_count = 200;
-endSimulation = 1000;
+endSimulation = 5000;
 ratio = recessionLength/lookahead;
 new_index = cast(step_count*ratio, 'int32');
 threshold = 20;
@@ -36,7 +36,7 @@ start_time = 0;
 scenario_count = [3 1];
 x = [];
 solutions = [];
-WT_ref = 2*WT_0;
+WT_ref = 1.2*WT_0;
 
 if ~strcmp(model, 'model_1') && ~strcmp(model, 'model_2') && ~strcmp(model, 'model_3')
     ME = MException('MyComponent:noSuchVariable','Model: %s does not exist',model);
@@ -93,12 +93,9 @@ while iteration < endSimulation/recessionLength
                 predicted_solutions(2:new_index+1,:,min_idx), ...
                 WT_ref_vec(2:new_index+1)];
 
-    if number_of_states == 6
-        truth_vector = ones(1,6);
-    else
-        truth_vector = ones(1,7);
-    end
+    truth_vector = ones(1,number_of_states);
 
+    % Determines if there was a population crash.
     if ~isequal(all(solutions >= 0),truth_vector)
         last_index = Inf;
         for i=1:number_of_states
